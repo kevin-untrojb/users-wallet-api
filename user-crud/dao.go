@@ -1,9 +1,28 @@
 package user_crud
 
-import "context"
+import (
+	"context"
+	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
+)
 
-type Dao interface {
+type MysqlDao interface {
 	InsertUser(context.Context, user) (int64, error)
 
-	GetUser(context.Context, string) (user,error)
+	GetUser(context.Context, string) (user, error)
+}
+
+type dao struct {
+	db mysql.Client
+}
+
+func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
+	panic("implement me")
+}
+
+func (d dao) GetUser(ctx context.Context, s string) (user, error) {
+	panic("implement me")
+}
+
+func newDao (db mysql.Client) MysqlDao{
+	return &dao{db}
 }

@@ -1,5 +1,5 @@
 package mysql
-func Connect() Client{
+
+func Connect() Client {
 	return NewClient()
 }
-

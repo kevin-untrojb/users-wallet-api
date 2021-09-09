@@ -5,21 +5,20 @@ import (
 	"os"
 )
 
-func main(){
+func main() {
 	port := os.Getenv("PORT")
-	if port == ""{
+	if port == "" {
 		port = "8080"
 	}
 
-	if err := run(port); err != nil{
+	if err := run(port); err != nil {
 		panic(err)
 	}
 }
 
-func run(port string) error{
+func run(port string) error {
 	router := gin.Default()
 
 	routerMapping(router)
-	return router.Run(":"+port)
+	return router.Run(":" + port)
 }
-
