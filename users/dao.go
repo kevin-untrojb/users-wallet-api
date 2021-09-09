@@ -1,11 +1,11 @@
-package user_crud
+package users
 
 import (
 	"context"
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
-//go:generate mockgen -destination=mock_dao.go -package=user_crud -source=dao.go MySql
+//go:generate mockgen -destination=mock_dao.go -package=users -source=dao.go MySql
 type MysqlDao interface {
 	InsertUser(context.Context, user) (int64, error)
 

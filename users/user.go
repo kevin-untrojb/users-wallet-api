@@ -1,4 +1,4 @@
-package user_crud
+package users
 
 type user struct {
 }

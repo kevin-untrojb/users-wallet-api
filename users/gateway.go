@@ -1,11 +1,11 @@
-package user_crud
+package users
 
 import (
 	"context"
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
-//go:generate mockgen -destination=mock_gateway.go -package=user_crud -source=gateway.go Gateway
+//go:generate mockgen -destination=mock_gateway.go -package=users -source=gateway.go Gateway
 
 type Gateway interface {
 	Create(context.Context, user) error
