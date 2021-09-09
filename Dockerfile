@@ -7,7 +7,7 @@ ENV GO111MODULE=on \
     GOARCH=amd64
 
 # Move to working directory /build
-WORKDIR /src
+WORKDIR /cmd/api
 
 # Copy and download dependency using go mod
 COPY go.mod .

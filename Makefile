@@ -7,7 +7,7 @@ format:
 	@go fmt ./...
 imports:
 	@echo "Executing goimports recursively"
-	@goimports -w $(find . -type f -name '*.go') cmd/
+	@goimports -w $(find . -type f -name '*.go') ../
 mocking:
 	@echo "generating mock files recursively"
 	@go generate ./...

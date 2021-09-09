@@ -1,8 +1,9 @@
 package mysql
 
 import (
-	"github.com/DATA-DOG/go-sqlmock"
 	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
 )
 
 type mockClient struct {

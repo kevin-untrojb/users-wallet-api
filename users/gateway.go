@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
