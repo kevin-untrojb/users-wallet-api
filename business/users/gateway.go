@@ -11,7 +11,7 @@ import (
 //go:generate mockgen -destination=mock_gateway.go -package=users -source=gateway.go Gateway
 
 type Gateway interface {
-	Create(context.Context, user)(int64, error)
+	Create(context.Context, user) (int64, error)
 
 	Get(context.Context, string) (user, error)
 }
@@ -22,7 +22,7 @@ type gateway struct {
 }
 
 func (g gateway) Create(ctx context.Context, u user) (int64, error) {
-	return g.db.InsertUser(ctx,u)
+	return g.db.InsertUser(ctx, u)
 }
 
 func (g gateway) Get(ctx context.Context, userID string) (user, error) {

@@ -15,7 +15,6 @@ type apiError struct {
 	ErrStatus int    `json:"status"`
 }
 
-
 func (e apiError) Message() string {
 	return e.ErrMsg
 }
@@ -31,7 +30,6 @@ func (e apiError) Error() string {
 	return e.ErrCode
 }
 
-
 func NewApiError(message string, error string, status int) ApiError {
 	return apiError{message, error, status}
 }
@@ -40,7 +38,7 @@ func NewNotFoundApiError(message string) ApiError {
 }
 
 func NewBadRequestApiError(message string) ApiError {
-	return apiError{message, "bad_request", http.StatusBadRequest,}
+	return apiError{message, "bad_request", http.StatusBadRequest}
 }
 
 func NewForbiddenApiError(message string) ApiError {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
@@ -24,8 +25,8 @@ func newDao(db mysql.Client) MysqlDao {
 
 const (
 	insertUserQuery = ""
-	checkUserQuery = "select count(*) from user u where u.email = ? or u.alias = ?"
-	getUserQuery = ""
+	checkUserQuery  = "select count(*) from user u where u.email = ? or u.alias = ?"
+	getUserQuery    = ""
 )
 
 func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
@@ -34,29 +35,29 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 	defer cancel()
 
 	err := d.db.WithTransaction(func(trx *sql.Tx) error {
-		row := d.db.RawQueryRow(ctx, nil, checkUserQuery, u.email, u.Alias)
+		row := d.db.RawQueryRow(ctx, nil, checkUserQuery, u.Email, u.Alias)
 		err := row.Scan(&lastUserID)
-		if err != nil{
+		if err != nil {
 			// todo handler
 			return err
 		}
-		if lastUserID == 0{
+		if lastUserID == 0 {
 			return fmt.Errorf("error, email or alias is already used")
 		}
 
-		exec, err := d.db.RawExec(ctx,trx,insertUserQuery,u.Name,u.Surname,u.Alias,u.email)
-		if err != nil{
+		exec, err := d.db.RawExec(ctx, trx, insertUserQuery, u.Name, u.Surname, u.Alias, u.Email)
+		if err != nil {
 			// todo handler
 			return err
 		}
 		lastUserID, err = exec.LastInsertId()
-		if err != nil{
+		if err != nil {
 			// todo handler
 			return err
 		}
 		return nil
 	})
-	return lastUserID,err
+	return lastUserID, err
 }
 
 func (d dao) GetUser(ctx context.Context, userID string) (user, error) {
@@ -65,7 +66,7 @@ func (d dao) GetUser(ctx context.Context, userID string) (user, error) {
 	defer cancel()
 
 	row := d.db.RawQueryRow(ctx, nil, getUserQuery, userID)
-	err := row.Scan(&u.ID, &u.Name, &u.Surname, &u.Alias, &u.email)
+	err := row.Scan(&u.ID, &u.Name, &u.Surname, &u.Alias, &u.Email)
 	if err != nil {
 		return u, fmt.Errorf("get_user: error getting user %w", err)
 	}

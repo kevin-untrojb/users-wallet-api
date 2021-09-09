@@ -7,14 +7,14 @@ type Currency interface {
 type usdt struct {
 }
 
-func (e usdt) GetAmount(string) string{
+func (e usdt) GetAmount(string) string {
 	panic("implement me")
 }
 
 type btc struct {
 }
 
-func (b btc) GetAmount(string)string {
+func (b btc) GetAmount(string) string {
 	panic("implement me")
 }
 

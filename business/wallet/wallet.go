@@ -21,9 +21,10 @@ type Movement struct {
 	Amount       string    `json:"amount"`
 	CurrencyName string    `json:"currency"`
 }
-func (w Wallet) ToUserWallet() Wallet{
+
+func (w Wallet) ToUserWallet() Wallet {
 	return Wallet{
-		CurrencyName: w.CurrencyName,
+		CurrencyName:   w.CurrencyName,
 		CurrentBalance: w.Currency.GetAmount(w.CurrentBalance),
 	}
 }
