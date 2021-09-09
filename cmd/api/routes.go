@@ -2,24 +2,24 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	users2 "github.com/kevin-untrojb/users-wallet-api/business/users"
+	wallet2 "github.com/kevin-untrojb/users-wallet-api/business/wallet"
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
-	"github.com/kevin-untrojb/users-wallet-api/users"
-	"github.com/kevin-untrojb/users-wallet-api/wallet"
 )
 
 func routerMapping(router *gin.Engine) {
 	dbClient := mysql.Connect()
 
-	userGateway := users.NewGateway(dbClient)
-	userHandler := users.NewHandler(userGateway)
+	accountGtw := wallet2.NewGateway(dbClient)
+	accountHandler := wallet2.NewHandler(accountGtw)
 
-	accountGtw := wallet.NewGateway(dbClient)
-	accountHandler := wallet.NewHandler(accountGtw)
+	usersGateway := users2.NewGateway(dbClient, accountGtw)
+	usersHandler := users2.NewHandler(usersGateway)
 
-	router.GET("", userHandler.Get)
-	router.POST("", userHandler.Post)
+	router.GET("/users/:user_id/account", accountHandler.SearchMovements)
+	router.POST("/users/:user_id/account", accountHandler.NewMovement)
 
-	router.GET("", accountHandler.GetAllMovements)
-	router.POST("", accountHandler.NewMovement)
+	router.GET("/users/:user_id", usersHandler.Get)
+	router.POST("/users", usersHandler.Post)
 
 }

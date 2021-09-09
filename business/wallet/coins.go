@@ -1,19 +1,17 @@
 package wallet
 
-
-type Wallet interface {
+type Coins interface {
 	GetAmount()
 }
 
 type usdt struct {
-
 }
+
 func (e usdt) GetAmount() {
 	panic("implement me")
 }
 
 type btc struct {
-
 }
 
 func (b btc) GetAmount() {
@@ -21,21 +19,20 @@ func (b btc) GetAmount() {
 }
 
 type ars struct {
-	
 }
 
 func (a ars) GetAmount() {
 	panic("implement me")
 }
+
 type errCoin struct {
-	
 }
 
 func (e errCoin) GetAmount() {
 	panic("implement me")
 }
 
-func cointFactory(coin string) Wallet{
+func cointFactory(coin string) Coins {
 	switch coin {
 	case "usdt":
 		return &usdt{}
