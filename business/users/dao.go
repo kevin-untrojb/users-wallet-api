@@ -2,8 +2,8 @@ package users
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
@@ -24,16 +24,46 @@ func newDao(db mysql.Client) MysqlDao {
 
 const (
 	insertUserQuery = ""
-
+	checkUserQuery = "select count(*) from user u where u.email = ? or u.alias = ?"
 	getUserQuery = ""
 )
 
 func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
-	panic("implement me")
+	var lastUserID int64
+	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
+	defer cancel()
+
+	err := d.db.WithTransaction(func(trx *sql.Tx) error {
+		row := d.db.RawQueryRow(ctx, nil, checkUserQuery, u.email, u.Alias)
+		err := row.Scan(&lastUserID)
+		if err != nil{
+			// todo handler
+			return err
+		}
+		if lastUserID == 0{
+			return fmt.Errorf("error, email or alias is already used")
+		}
+
+		exec, err := d.db.RawExec(ctx,trx,insertUserQuery,u.Name,u.Surname,u.Alias,u.email)
+		if err != nil{
+			// todo handler
+			return err
+		}
+		lastUserID, err = exec.LastInsertId()
+		if err != nil{
+			// todo handler
+			return err
+		}
+		return nil
+	})
+	return lastUserID,err
 }
 
 func (d dao) GetUser(ctx context.Context, userID string) (user, error) {
 	var u user
+	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
+	defer cancel()
+
 	row := d.db.RawQueryRow(ctx, nil, getUserQuery, userID)
 	err := row.Scan(&u.ID, &u.Name, &u.Surname, &u.Alias, &u.email)
 	if err != nil {

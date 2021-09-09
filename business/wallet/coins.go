@@ -1,34 +1,34 @@
 package wallet
 
 type Currency interface {
-	GetAmount()
+	GetAmount(string) string
 }
 
 type usdt struct {
 }
 
-func (e usdt) GetAmount() {
+func (e usdt) GetAmount(string) string{
 	panic("implement me")
 }
 
 type btc struct {
 }
 
-func (b btc) GetAmount() {
+func (b btc) GetAmount(string)string {
 	panic("implement me")
 }
 
 type ars struct {
 }
 
-func (a ars) GetAmount() {
+func (a ars) GetAmount(string) string {
 	panic("implement me")
 }
 
 type errCoin struct {
 }
 
-func (e errCoin) GetAmount() {
+func (e errCoin) GetAmount(string) string {
 	panic("implement me")
 }
 
