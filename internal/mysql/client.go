@@ -26,7 +26,6 @@ var MakeClient func(driver, connection string, connections int, connMaxLifeTime 
 const (
 	driverName = "mysql"
 
-
 	MediumTimeout   = 30 * time.Second
 	LongTimeout     = 5 * time.Minute
 	MinConnections  = 10

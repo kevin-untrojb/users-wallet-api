@@ -11,7 +11,6 @@ type Gateway interface {
 	Create(context.Context, user) error
 
 	Get(context.Context, string) error
-
 }
 
 type gateway struct {
@@ -26,6 +25,6 @@ func (g gateway) Get(ctx context.Context, s string) error {
 	panic("implement me")
 }
 
-func NewGateway(dbClient mysql.Client) Gateway{
+func NewGateway(dbClient mysql.Client) Gateway {
 	return &gateway{db: newDao(dbClient)}
 }
