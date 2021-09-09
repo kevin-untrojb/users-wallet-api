@@ -16,7 +16,24 @@ type handler struct {
 }
 
 func (h handler) Post(c *gin.Context) {
-	panic("implement me")
+	ctx := c.Request.Context()
+	var u user
+
+	if err := c.BindJSON(&u); err != nil{
+		c.JSON(http.StatusBadRequest,err)
+		return
+	}
+	if err := u.ValidateFields(); err != nil{
+		c.JSON(http.StatusBadRequest,err)
+		return
+	}
+	lasInsertedID, err := h.gtw.Create(ctx,u)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,err)
+		return
+	}
+
+	c.JSON(http.StatusOK,NewUserResponse{lasInsertedID})
 }
 
 func (h handler) Get(c *gin.Context) {
@@ -24,6 +41,7 @@ func (h handler) Get(c *gin.Context) {
 	userID := c.Param("user_id")
 	if userID == "" {
 		c.JSON(http.StatusBadRequest, errors.New("bad_request error"))
+		return
 	}
 	user, err := h.gtw.Get(ctx, userID)
 	if err != nil {

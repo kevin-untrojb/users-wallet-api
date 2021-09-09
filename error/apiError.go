@@ -1,4 +1,4 @@
-package apiError
+package error
 
 import "net/http"
 
