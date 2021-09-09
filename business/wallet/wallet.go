@@ -5,15 +5,17 @@ import (
 )
 
 type Wallet struct {
-	id            string
-	walletType    string
-	currentAmount Coins
-	Movements     []Movement
+	ID             string
+	UserID         string
+	currentBalance string
+	currency       Currency
+	Movements      []Movement
 }
 type Movement struct {
-	id           string
-	movementType string
-	userID       string
-	date         time.Time
-	amount       Coins
+	ID           string
+	WalletID     string
+	MovementType string
+	UserID       string
+	Date         time.Time
+	Amount       string
 }

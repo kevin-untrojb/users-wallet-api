@@ -1,7 +1,7 @@
 package users
 
 import (
-	wallet2 "github.com/kevin-untrojb/users-wallet-api/business/wallet"
+	"github.com/kevin-untrojb/users-wallet-api/business/wallet"
 )
 
 type user struct {
@@ -10,5 +10,5 @@ type user struct {
 	Surname string
 	Alias   string
 	email   string
-	Wallets []wallet2.Wallet
+	Wallets []wallet.Wallet
 }

@@ -1,6 +1,6 @@
 package wallet
 
-type Coins interface {
+type Currency interface {
 	GetAmount()
 }
 
@@ -32,8 +32,8 @@ func (e errCoin) GetAmount() {
 	panic("implement me")
 }
 
-func cointFactory(coin string) Coins {
-	switch coin {
+func CurrencyFactory(currency string) Currency {
+	switch currency {
 	case "usdt":
 		return &usdt{}
 	case "btc":
