@@ -67,7 +67,6 @@ func (mc *mockClient) ExpectationsWereMet() error {
 	return mc.mock.ExpectationsWereMet()
 }
 
-
 func makeMockClient(driver, dataSourceName string, maxConnections int, connMaxLifeTime time.Duration) (Client, error) {
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {

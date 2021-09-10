@@ -12,7 +12,7 @@ import (
 type MysqlDao interface {
 	InsertUser(context.Context, user) (int64, error)
 
-	GetUser(context.Context, string) (user, error)
+	GetUser(context.Context, int64) (user, error)
 }
 
 type dao struct {
@@ -60,7 +60,7 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 	return lastUserID, err
 }
 
-func (d dao) GetUser(ctx context.Context, userID string) (user, error) {
+func (d dao) GetUser(ctx context.Context, userID int64) (user, error) {
 	var u user
 	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
 	defer cancel()

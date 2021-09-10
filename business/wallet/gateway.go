@@ -7,7 +7,7 @@ import (
 )
 
 type Gateway interface {
-	GetWalletsFroUser(context.Context, string) ([]Wallet, error)
+	GetWalletsFroUser(context.Context, int64) ([]Wallet, error)
 	SearchMovementsForUser(ctx context.Context)
 	NewMovement(ctx context.Context)
 }
@@ -15,8 +15,8 @@ type gateway struct {
 	db MysqlDao
 }
 
-func (g gateway) GetWalletsFroUser(ctx context.Context, s string) ([]Wallet, error) {
-	panic("implement me")
+func (g gateway) GetWalletsFroUser(ctx context.Context, s int64) ([]Wallet, error) {
+	return nil, nil
 }
 
 func (g gateway) SearchMovementsForUser(ctx context.Context) {

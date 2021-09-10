@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"github.com/kevin-untrojb/users-wallet-api/internal/host"
 	"time"
+
+	"github.com/kevin-untrojb/users-wallet-api/internal/host"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
@@ -34,9 +35,9 @@ const (
 )
 
 func NewClient() Client {
-	MakeClient = makeRealClient
+	MakeClient = makeMockClient
 
-	if host.IsTesting(){
+	if host.IsProduction() {
 		MakeClient = makeRealClient
 	}
 

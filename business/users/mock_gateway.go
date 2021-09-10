@@ -50,7 +50,7 @@ func (mr *MockGatewayMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockGateway) Get(arg0 context.Context, arg1 string) (user, error) {
+func (m *MockGateway) Get(arg0 context.Context, arg1 int64) (user, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", arg0, arg1)
 	ret0, _ := ret[0].(user)

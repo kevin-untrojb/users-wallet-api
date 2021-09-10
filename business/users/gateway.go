@@ -13,7 +13,7 @@ import (
 type Gateway interface {
 	Create(context.Context, user) (int64, error)
 
-	Get(context.Context, string) (user, error)
+	Get(context.Context, int64) (user, error)
 }
 
 type gateway struct {
@@ -25,7 +25,7 @@ func (g gateway) Create(ctx context.Context, u user) (int64, error) {
 	return g.db.InsertUser(ctx, u)
 }
 
-func (g gateway) Get(ctx context.Context, userID string) (user, error) {
+func (g gateway) Get(ctx context.Context, userID int64) (user, error) {
 	user, err := g.db.GetUser(ctx, userID)
 	if err != nil {
 		return user, fmt.Errorf("users_error: error getting user form db")

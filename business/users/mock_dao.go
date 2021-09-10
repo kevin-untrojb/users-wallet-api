@@ -35,7 +35,7 @@ func (m *MockMysqlDao) EXPECT() *MockMysqlDaoMockRecorder {
 }
 
 // GetUser mocks base method.
-func (m *MockMysqlDao) GetUser(arg0 context.Context, arg1 string) (user, error) {
+func (m *MockMysqlDao) GetUser(arg0 context.Context, arg1 int64) (user, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", arg0, arg1)
 	ret0, _ := ret[0].(user)
