@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"github.com/kevin-untrojb/users-wallet-api/internal/host"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -33,8 +34,12 @@ const (
 )
 
 func NewClient() Client {
-
 	MakeClient = makeRealClient
+
+	if host.IsTesting(){
+		MakeClient = makeRealClient
+	}
+
 	db, err := MakeClient(driverName, "", MinConnections, LongTimeout)
 	if err != nil {
 		panic(err)
