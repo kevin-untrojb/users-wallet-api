@@ -2,8 +2,9 @@ package wallet
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Handler interface {
@@ -14,6 +15,7 @@ type Handler interface {
 type handler struct {
 	gtw Gateway
 }
+
 func NewHandler(gtw Gateway) Handler {
 	return &handler{gtw}
 }
@@ -32,12 +34,9 @@ func (h handler) SearchTransactions(c *gin.Context) {
 	}
 
 	searchParams, err := NewSearchParams(c)
-	if err != nil{
-		c.JSON(http.StatusBadRequest,err)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	h.gtw.SearchTransactionsForUser(ctx,userID,searchParams)
+	h.gtw.SearchTransactionsForUser(ctx, userID, searchParams)
 }
-
-
-

@@ -1,15 +1,16 @@
 package wallet
 
 import (
-	"github.com/gin-gonic/gin"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SearchRequestParams struct {
-	Limit int
-	Offset int
+	Limit        int
+	Offset       int
 	MovementType string
-	Currency string
+	Currency     string
 }
 
 func NewSearchParams(c *gin.Context) (*SearchRequestParams, error) {

@@ -5,6 +5,7 @@ import "os"
 var (
 	env = os.Getenv("Environment")
 )
-func IsTesting() bool {
-	return env == "test"
+
+func IsProduction() bool {
+	return env == "production"
 }

@@ -12,7 +12,7 @@ import (
 type MysqlDao interface {
 	InsertUser(context.Context, user) (int64, error)
 
-	GetUser(context.Context, string) (user, error)
+	GetUser(context.Context, int64) (user, error)
 }
 
 type dao struct {
@@ -35,13 +35,14 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 	defer cancel()
 
 	err := d.db.WithTransaction(func(trx *sql.Tx) error {
-		row := d.db.RawQueryRow(ctx, nil, checkUserQuery, u.Email, u.Alias)
-		err := row.Scan(&lastUserID)
+		var count int64
+		row := d.db.RawQueryRow(ctx, trx, checkUserQuery, u.Email, u.Alias)
+		err := row.Scan(&count)
 		if err != nil {
 			// todo handler
 			return err
 		}
-		if lastUserID == 0 {
+		if count != 0 {
 			return fmt.Errorf("error, email or alias is already used")
 		}
 
@@ -60,7 +61,7 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 	return lastUserID, err
 }
 
-func (d dao) GetUser(ctx context.Context, userID string) (user, error) {
+func (d dao) GetUser(ctx context.Context, userID int64) (user, error) {
 	var u user
 	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
 	defer cancel()

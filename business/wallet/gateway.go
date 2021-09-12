@@ -23,7 +23,6 @@ func (g gateway) GetWalletsFroUser(ctx context.Context, s string) ([]Wallet, err
 	panic("implement me")
 }
 
-
 func (g gateway) NewTransaction(ctx context.Context) {
 	panic("implement me")
 }

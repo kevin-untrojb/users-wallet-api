@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,13 @@ type Handler interface {
 	Post(c *gin.Context)
 	Get(c *gin.Context)
 }
+
+func NewHandler(gtw Gateway) Handler {
+	return &handler{
+		gtw: gtw,
+	}
+}
+
 type handler struct {
 	gtw Gateway
 }
@@ -38,9 +46,9 @@ func (h handler) Post(c *gin.Context) {
 
 func (h handler) Get(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID := c.Param("user_id")
-	if userID == "" {
-		c.JSON(http.StatusBadRequest, errors.New("bad_request error"))
+	userID, err := getIDasInt64(c.Param("user_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	user, err := h.gtw.Get(ctx, userID)
@@ -51,8 +59,9 @@ func (h handler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func NewHandler(gtw Gateway) Handler {
-	return &handler{
-		gtw: gtw,
+func getIDasInt64(idStr string) (int64, error) {
+	if idStr == "" {
+		return 0, errors.New("error: bad request")
 	}
+	return strconv.ParseInt(idStr, 10, 64)
 }

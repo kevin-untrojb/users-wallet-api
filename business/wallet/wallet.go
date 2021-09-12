@@ -20,7 +20,6 @@ type Transaction struct {
 	Date            time.Time `json:"date_create"`
 	Amount          string    `json:"amount"`
 	CurrencyName    string    `json:"currency"`
-
 }
 
 func (w Wallet) ToUserWallet() Wallet {
