@@ -7,23 +7,23 @@ import (
 )
 
 type Gateway interface {
-	GetWalletsFroUser(context.Context, int64) ([]Wallet, error)
-	SearchMovementsForUser(ctx context.Context)
-	NewMovement(ctx context.Context)
+	GetWalletsFroUser(context.Context, string) ([]Wallet, error)
+	SearchTransactionsForUser(ctx context.Context, userID string, params *SearchRequestParams)
+	NewTransaction(ctx context.Context)
 }
 type gateway struct {
 	db MysqlDao
 }
 
-func (g gateway) GetWalletsFroUser(ctx context.Context, s int64) ([]Wallet, error) {
-	return nil, nil
-}
-
-func (g gateway) SearchMovementsForUser(ctx context.Context) {
+func (g gateway) SearchTransactionsForUser(ctx context.Context, userID string, params *SearchRequestParams) {
 	panic("implement me")
 }
 
-func (g gateway) NewMovement(ctx context.Context) {
+func (g gateway) GetWalletsFroUser(ctx context.Context, s string) ([]Wallet, error) {
+	panic("implement me")
+}
+
+func (g gateway) NewTransaction(ctx context.Context) {
 	panic("implement me")
 }
 

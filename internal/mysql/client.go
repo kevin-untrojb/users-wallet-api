@@ -6,9 +6,8 @@ import (
 	"database/sql/driver"
 	"time"
 
-	"github.com/kevin-untrojb/users-wallet-api/internal/host"
-
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/kevin-untrojb/users-wallet-api/internal/host"
 )
 
 type Client interface {
@@ -35,7 +34,7 @@ const (
 )
 
 func NewClient() Client {
-	MakeClient = makeMockClient
+	MakeClient = makeRealClient
 
 	if host.IsProduction() {
 		MakeClient = makeRealClient

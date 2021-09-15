@@ -16,7 +16,7 @@ func routerMapping(router *gin.Engine) {
 	usersGateway := users2.NewGateway(dbClient, accountGtw)
 	usersHandler := users2.NewHandler(usersGateway)
 
-	router.GET("/users/:user_id/account", accountHandler.SearchMovements)
+	router.GET("/users/:user_id/account", accountHandler.SearchTransactions)
 	router.POST("/users/:user_id/account", accountHandler.NewMovement)
 
 	router.GET("/users/:user_id", usersHandler.Get)
