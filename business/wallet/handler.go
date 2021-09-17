@@ -4,11 +4,13 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/kevin-untrojb/users-wallet-api/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
 type Handler interface {
-	NewMovement(c *gin.Context)
+	NewTransaction(c *gin.Context)
 	SearchTransactions(c *gin.Context)
 }
 
@@ -20,15 +22,29 @@ func NewHandler(gtw Gateway) Handler {
 	return &handler{gtw}
 }
 
-func (h handler) NewMovement(c *gin.Context) {
-	panic("implement me")
+func (h handler) NewTransaction(c *gin.Context) {
+	ctx := c.Request.Context()
+	params, err := getTransactionParams(c)
+	if err != nil {
+		// todo handler
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	transactionID, err := h.gtw.NewTransaction(ctx, params)
+	if err != nil {
+		// todo handler
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, NewTransactionResponse{transactionID})
 }
 
 func (h handler) SearchTransactions(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	userID := c.Param("user_id")
-	if userID == "" {
+	userID, err := utils.ConvertStringToInt64(c.Param("user_id"))
+	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.New("bad_request error"))
 		return
 	}
@@ -38,5 +54,16 @@ func (h handler) SearchTransactions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	h.gtw.SearchTransactionsForUser(ctx, userID, searchParams)
+
+	result, err := h.gtw.SearchTransactionsForUser(ctx, userID, searchParams)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func getTransactionParams(c *gin.Context) (Transaction, interface{}) {
+	return Transaction{}, nil
 }

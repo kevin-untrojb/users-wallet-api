@@ -9,10 +9,11 @@ import (
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
 
+//go:generate mockgen -destination=mock_dao.go -package=wallet -source=dao.go MySql
 type MysqlDao interface {
-	SearchTransactions(ctx context.Context, userID string, params *SearchRequestParams) (SearchResponse, error)
-
-	GetWalletsForUser(ctx context.Context, userID string)
+	SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error)
+	NewTransaction(ctx context.Context, transaction Transaction) (int64, error)
+	GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error)
 }
 
 type dao struct {
@@ -23,7 +24,11 @@ func newDao(db mysql.Client) MysqlDao {
 	return &dao{db}
 }
 
-func (d dao) SearchTransactions(ctx context.Context, userID string, params *SearchRequestParams) (SearchResponse, error) {
+const (
+	getWalletsAndCurrenciesForUser = "SELECT w.ID, w.CURRENT_BALANCE, c.NAME, c.EXPONENT FROM WALLET w INNER JOIN USER u ON u.ID = w.USER_ID INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID WHERE u.ID = ?"
+)
+
+func (d dao) SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error) {
 	var response SearchResponse
 	transactionsResults := make([]Transaction, 0)
 
@@ -31,7 +36,7 @@ func (d dao) SearchTransactions(ctx context.Context, userID string, params *Sear
 		searchQuery, searchQueryParams, err := CreateSearchQuery(userID, params, false)
 		if err != nil {
 			// todo log
-			return  err
+			return err
 		}
 		ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
 		defer cancel()
@@ -39,7 +44,7 @@ func (d dao) SearchTransactions(ctx context.Context, userID string, params *Sear
 		rows, err := d.db.RawQuery(ctx, trx, searchQuery, searchQueryParams...)
 		if err != nil {
 			// todo log
-			return  err
+			return err
 		}
 		defer rows.Close()
 
@@ -51,19 +56,18 @@ func (d dao) SearchTransactions(ctx context.Context, userID string, params *Sear
 				&currentTransaction.Date,
 				&currentTransaction.CurrencyName)
 
-
 			if err != nil {
 				// todo compeltar
 				return err
 			}
-			transactionsResults = append(transactionsResults,currentTransaction)
+			transactionsResults = append(transactionsResults, currentTransaction)
 		}
 		response.Results = transactionsResults
 
 		CountQuery, countQueryParams, err := CreateSearchQuery(userID, params, true)
 		if err != nil {
 			// todo log
-			return  err
+			return err
 		}
 		ctx, cancel = context.WithTimeout(ctx, mysql.MediumTimeout)
 		defer cancel()
@@ -76,30 +80,62 @@ func (d dao) SearchTransactions(ctx context.Context, userID string, params *Sear
 
 		return nil
 	})
+	response.Paging.Limit = params.Limit
+	response.Paging.Offset = params.Offset
 
 	return response, err
 }
 
-func (d dao) GetWalletsForUser(ctx context.Context, userID string) {
-	panic("implement me")
+func (d dao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
+	var walletResults []Wallet
+	var exponent int64
+
+	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
+	defer cancel()
+
+	rows, err := d.db.RawQuery(ctx, nil, getWalletsAndCurrenciesForUser, userID)
+	if err != nil {
+		// todo log
+		return walletResults, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		currentWallet := Wallet{}
+
+		err := rows.Scan(&currentWallet.ID,
+			&currentWallet.CurrentBalance,
+			&currentWallet.CurrencyName, &exponent)
+		if err != nil {
+			// todo handle
+			return walletResults, err
+		}
+		currentWallet.Currency = CurrencyFactory(currentWallet.CurrencyName, exponent)
+		walletResults = append(walletResults, currentWallet)
+	}
+	return walletResults, nil
 }
 
-func CreateSearchQuery(userID string, params *SearchRequestParams, isCountQuery bool) (string, []interface{}, error) {
+func (d dao) NewTransaction(ctx context.Context, transaction Transaction) (int64, error) {
+	return 0, nil
+}
+
+func CreateSearchQuery(userID int64, params *SearchRequestParams, isCountQuery bool) (string, []interface{}, error) {
 	var query bytes.Buffer
 	queryParams := make([]interface{}, 0)
 
 	if params == nil {
 		return "", nil, fmt.Errorf("nil params")
 	}
-	if isCountQuery{
+	if isCountQuery {
 		query.WriteString("SELECT count(*) FROM TRANSACTION t")
-	}else {
-		query.WriteString("SELECT t.ID, t.TRANSACTION_TYPE, t.AMOUNT, t.DATE_CREATED, c.NAME from Transaction")
+	} else {
+		query.WriteString("SELECT t.ID, t.TRANSACTION_TYPE, t.AMOUNT, t.DATE_CREATED, c.NAME FROM TRANSACTION")
 	}
 
-	query.WriteString("INNER JOIN WALLET w ON t.WALLET_ID = w.ID")
-	query.WriteString("INNER JOIN USER u ON u.ID = w.USER_ID")
-	query.WriteString("INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID")
+	query.WriteString(" INNER JOIN WALLET w ON t.WALLET_ID = w.ID")
+	query.WriteString(" INNER JOIN USER u ON u.ID = w.USER_ID")
+	query.WriteString(" INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID")
 	query.WriteString(" WHERE")
 
 	if params.Currency != "" {
@@ -115,11 +151,11 @@ func CreateSearchQuery(userID string, params *SearchRequestParams, isCountQuery 
 		queryParams = append(queryParams, params.MovementType)
 	}
 
-	if !isCountQuery{
+	if !isCountQuery {
 		query.WriteString(" ORDER BY m.DATE_CREATED DESC")
 
 		query.WriteString(" LIMIT ? OFFSET ?") // Required for pagination
-		queryParams = append(queryParams, params.Offset+1, params.Offset+params.Limit)
+		queryParams = append(queryParams, params.Limit, params.Offset)
 	}
 
 	return query.String(), queryParams, nil

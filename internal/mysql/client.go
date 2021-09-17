@@ -34,7 +34,7 @@ const (
 )
 
 func NewClient() Client {
-	MakeClient = makeRealClient
+	MakeClient = makeMockClient
 
 	if host.IsProduction() {
 		MakeClient = makeRealClient

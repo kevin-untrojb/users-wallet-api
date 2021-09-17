@@ -1,11 +1,10 @@
 package users
 
 import (
-	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kevin-untrojb/users-wallet-api/utils"
 )
 
 type Handler interface {
@@ -46,7 +45,7 @@ func (h handler) Post(c *gin.Context) {
 
 func (h handler) Get(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID, err := getIDasInt64(c.Param("user_id"))
+	userID, err := utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -57,11 +56,4 @@ func (h handler) Get(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
-}
-
-func getIDasInt64(idStr string) (int64, error) {
-	if idStr == "" {
-		return 0, errors.New("error: bad request")
-	}
-	return strconv.ParseInt(idStr, 10, 64)
 }
