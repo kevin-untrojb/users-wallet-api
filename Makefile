@@ -17,3 +17,6 @@ test:
 run:
 	@echo "Running Application"
 	@docker-compose -f build/docker-compose.yml up --build api mysqldb
+clean:
+	@echo "Cleaning docker containers"
+	@docker-compose -f build/docker-compose.yml down -v

@@ -2,6 +2,8 @@ package wallet
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/kevin-untrojb/users-wallet-api/utils"
@@ -26,14 +28,14 @@ func (h handler) NewTransaction(c *gin.Context) {
 	ctx := c.Request.Context()
 	transaction, err := getTransactionParams(c)
 	if err != nil {
-		// todo handler
+		log.Println(fmt.Sprintf("error getting params %s",err.Error()))
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	transactionID, err := h.gtw.NewTransaction(ctx, transaction)
 	if err != nil {
-		// todo handler
+		log.Println(fmt.Sprintf("error creating new transaction %s", err.Error()))
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -45,12 +47,14 @@ func (h handler) SearchTransactions(c *gin.Context) {
 
 	userID, err := utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {
+		log.Println(fmt.Sprintf("error parsing id %s", c.Param("user_id")))
 		c.JSON(http.StatusBadRequest, errors.New("bad_request error"))
 		return
 	}
 
-	searchParams, err := NewSearchParams(c)
+	searchParams, err := CreateSearchParams(c)
 	if err != nil {
+		log.Println(fmt.Sprintf("error creating search params: %s", err.Error()))
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -69,17 +73,17 @@ func getTransactionParams(c *gin.Context) (Transaction, error) {
 	var err error
 
 	if err := c.BindJSON(&transaction); err != nil {
-		//todo log
+		log.Println(fmt.Sprintf("error json format: %s",err.Error()))
 		return transaction, err
 	}
 	transaction.UserID, err = utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {
-		//todo log
+		log.Println(fmt.Sprintf("error parsing user_id: %s",err.Error()))
 		return transaction, err
 	}
 	transaction.WalletID, err = utils.ConvertStringToInt64(c.Param("wallet_id"))
 	if err != nil {
-		//todo log
+		log.Println(fmt.Sprintf("error parsing wallet_id: %s",err.Error()))
 		return transaction, err
 	}
 

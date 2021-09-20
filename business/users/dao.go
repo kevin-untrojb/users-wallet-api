@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
 )
@@ -26,7 +27,7 @@ func newDao(db mysql.Client) MysqlDao {
 const (
 	insertUserQuery = "insert into user (first_name, last_name, alias, email, date_created) VALUES ( ?, ?, ?, ?, UTC_TIMESTAMP())"
 	checkUserQuery  = "select count(*) from user u where u.email = ? or u.alias = ?"
-	getUserQuery    = "select ID, NAME, SURNAME,ALIAS, EMAIL from user where ID = ?"
+	getUserQuery    = "select id, first_name, last_name, alias, email from user where id = ?"
 )
 
 func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
@@ -39,21 +40,21 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 		row := d.db.RawQueryRow(ctx, trx, checkUserQuery, u.Email, u.Alias)
 		err := row.Scan(&count)
 		if err != nil {
-			// todo handler
+			log.Println(fmt.Sprintf("error checking if user into db email %s, alias: %s, count %d, error: %s", u.Email, u.Alias, count, err.Error()))
 			return err
 		}
 		if count != 0 {
 			return fmt.Errorf("error, email or alias is already used")
 		}
 
-		exec, err := d.db.RawExec(ctx, trx, insertUserQuery, u.Name, u.Surname, u.Alias, u.Email)
+		exec, err := d.db.RawExec(ctx, trx, insertUserQuery, u.FirstName, u.LastName, u.Alias, u.Email)
 		if err != nil {
-			// todo handler
+			log.Println(fmt.Sprintf("error inserting user into db query:%s, error: %s", insertUserQuery, err.Error()))
 			return err
 		}
 		lastUserID, err = exec.LastInsertId()
 		if err != nil {
-			// todo handler
+			log.Println(fmt.Sprintf("error last inserting id inserting error: %s", err.Error()))
 			return err
 		}
 		return nil
@@ -67,8 +68,9 @@ func (d dao) GetUser(ctx context.Context, userID int64) (user, error) {
 	defer cancel()
 
 	row := d.db.RawQueryRow(ctx, nil, getUserQuery, userID)
-	err := row.Scan(&u.ID, &u.Name, &u.Surname, &u.Alias, &u.Email)
+	err := row.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Alias, &u.Email)
 	if err != nil {
+		log.Println(fmt.Sprintf("db error: gettin user %d: %s", userID, err.Error()))
 		return u, fmt.Errorf("get_user: error getting user %w", err)
 	}
 	return u, nil

@@ -8,16 +8,16 @@ import (
 )
 
 type user struct {
-	ID      int64           `json:"id"`
-	Name    string          `json:"name"`
-	Surname string          `json:"surname"`
-	Alias   string          `json:"alias"`
-	Email   string          `json:"email"`
-	Wallets []wallet.Wallet `json:"wallets"`
+	ID        int64           `json:"id"`
+	FirstName string          `json:"first_name"`
+	LastName  string          `json:"last_name"`
+	Alias     string          `json:"alias"`
+	Email     string          `json:"email"`
+	Wallets   []wallet.Wallet `json:"wallets"`
 }
 
 func (u *user) ValidateFields() error {
-	if !utils.IsValidField(u.Name) || !utils.IsValidField(u.Surname) {
+	if !utils.IsValidField(u.FirstName) || !utils.IsValidField(u.LastName) {
 		return fmt.Errorf("bad_request: error user name or surname")
 	}
 	if !utils.IsValidField(u.Alias) || !utils.IsValidField(u.Email) {

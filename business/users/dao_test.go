@@ -20,7 +20,7 @@ func TestGetUserOK(t *testing.T) {
 	}
 	dbMockClient := mysql.Connect()
 	rows := sqlmock.NewRows([]string{"ID", "NAME", "SURNAME", "ALIAS", "EMAIL"})
-	rows.AddRow(userMock.ID, userMock.Name, userMock.Surname, userMock.Alias, userMock.Email)
+	rows.AddRow(userMock.ID, userMock.FirstName, userMock.LastName, userMock.Alias, userMock.Email)
 	dbMockClient.AddExpectedQueryWithRows(getUserQuery, rows, userID)
 
 	mysql := newDao(dbMockClient)
@@ -52,17 +52,17 @@ func TestInsertUserOK(t *testing.T) {
 	ctx := context.Background()
 	insertedID := int64(1)
 	userMock := user{
-		Email:   "asads@gmail.com",
-		Alias:   "robertito",
-		Name:    "roberto",
-		Surname: "asd",
+		Email:     "asads@gmail.com",
+		Alias:     "robertito",
+		FirstName: "roberto",
+		LastName:  "asd",
 	}
 	dbMockClient := mysql.Connect()
 	checkRows := sqlmock.NewRows([]string{"COUNT"}).AddRow(0)
 	dbMockClient.AddExpectedQueryWithRows(checkUserQuery, checkRows, userMock.Email, userMock.Alias)
 
 	dbMockClient.AddExpectedExec(insertUserQuery, sqlmock.NewResult(insertedID, 1),
-		userMock.Name, userMock.Surname, userMock.Alias, userMock.Email)
+		userMock.FirstName, userMock.LastName, userMock.Alias, userMock.Email)
 	lastID, err := newDao(dbMockClient).InsertUser(ctx, userMock)
 	assert.Nil(t, err)
 	assert.Equal(t, lastID, insertedID)
@@ -71,17 +71,17 @@ func TestInsertUserOK(t *testing.T) {
 func TestInsertUserErrorInsertingUser(t *testing.T) {
 	ctx := context.Background()
 	userMock := user{
-		Email:   "asads@gmail.com",
-		Alias:   "robertito",
-		Name:    "roberto",
-		Surname: "asd",
+		Email:     "asads@gmail.com",
+		Alias:     "robertito",
+		FirstName: "roberto",
+		LastName:  "asd",
 	}
 	dbMockClient := mysql.Connect()
 	checkRows := sqlmock.NewRows([]string{"COUNT"}).AddRow(0)
 	dbMockClient.AddExpectedQueryWithRows(checkUserQuery, checkRows, userMock.Email, userMock.Alias)
 
 	dbMockClient.AddExpectedExecWithError(insertUserQuery, errors.New("db error"),
-		userMock.Name, userMock.Surname, userMock.Alias, userMock.Email)
+		userMock.FirstName, userMock.LastName, userMock.Alias, userMock.Email)
 	_, err := newDao(dbMockClient).InsertUser(ctx, userMock)
 	assert.NotNil(t, err)
 	assert.Equal(t, err.Error(), "db error")

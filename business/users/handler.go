@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,10 +29,12 @@ func (h handler) Post(c *gin.Context) {
 	var u user
 
 	if err := c.BindJSON(&u); err != nil {
+		log.Println("error json format")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	if err := u.ValidateFields(); err != nil {
+		log.Println("error invalid fields")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
@@ -47,6 +51,7 @@ func (h handler) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID, err := utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {
+		log.Println(fmt.Sprintf("invalid user id %s", c.Param("user_id")))
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}

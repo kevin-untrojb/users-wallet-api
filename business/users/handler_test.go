@@ -21,10 +21,10 @@ func TestHandlerPostOK(t *testing.T) {
 	ctx := context.Background()
 	userID := int64(1)
 	userMock := user{
-		Email:   "asads@gmail.com",
-		Alias:   "robertito",
-		Name:    "roberto",
-		Surname: "asd",
+		Email:     "asads@gmail.com",
+		Alias:     "robertito",
+		FirstName: "roberto",
+		LastName:  "asd",
 	}
 	userBytes, err := json.Marshal(userMock)
 	assert.Nil(t, err)
@@ -49,11 +49,11 @@ func TestHandlerGetOK(t *testing.T) {
 	ctx := context.Background()
 	userID := int64(1)
 	userMock := user{
-		ID:      userID,
-		Email:   "asads@gmail.com",
-		Alias:   "robertito",
-		Name:    "roberto",
-		Surname: "asd",
+		ID:        userID,
+		Email:     "asads@gmail.com",
+		Alias:     "robertito",
+		FirstName: "roberto",
+		LastName:  "asd",
 	}
 
 	gtwMock := NewMockGateway(mockCtrl)

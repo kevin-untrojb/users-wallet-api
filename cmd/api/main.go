@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/kevin-untrojb/users-wallet-api/business/users"
@@ -37,10 +38,16 @@ func routerMapping(router *gin.Engine) {
 	usersGateway := users.NewGateway(dbClient, accountGtw)
 	usersHandler := users.NewHandler(usersGateway)
 
-	router.GET("/users/:user_id/wallet", accountHandler.SearchTransactions)
+	router.GET("/ping", ping)
+
 	router.POST("/users/:user_id/wallet/:wallet_id/transaction", accountHandler.NewTransaction)
+	router.GET("/users/:user_id/wallet", accountHandler.SearchTransactions)
+
 
 	router.GET("/users/:user_id", usersHandler.Get)
 	router.POST("/users", usersHandler.Post)
 
+}
+func ping(c *gin.Context) {
+	c.String(http.StatusOK, "pong")
 }

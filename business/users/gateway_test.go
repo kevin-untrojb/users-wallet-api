@@ -16,10 +16,10 @@ func TestCreateUserShouldReturnOK(t *testing.T) {
 	ctx := context.Background()
 	newID := int64(1)
 	userMock := user{
-		Email:   "asads@gmail.com",
-		Alias:   "robertito",
-		Name:    "roberto",
-		Surname: "asd",
+		Email:     "asads@gmail.com",
+		Alias:     "robertito",
+		FirstName: "roberto",
+		LastName:  "asd",
 	}
 	mockDao := NewMockMysqlDao(mockCtrl)
 	mockDao.EXPECT().InsertUser(ctx, userMock).Return(newID, nil)

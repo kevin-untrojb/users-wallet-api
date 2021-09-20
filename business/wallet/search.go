@@ -13,13 +13,13 @@ type SearchRequestParams struct {
 	Currency     string
 }
 
-func NewSearchParams(c *gin.Context) (*SearchRequestParams, error) {
+func CreateSearchParams(c *gin.Context) (*SearchRequestParams, error) {
 	var err error
 	var params SearchRequestParams
 
 	limit := c.Query("limit")
 	offset := c.Query("offset")
-	params.MovementType = c.Query("movement_type")
+	params.MovementType = c.Query("transaction_type")
 	params.Currency = c.Query("currency")
 
 	params.Limit, err = strconv.Atoi(limit)

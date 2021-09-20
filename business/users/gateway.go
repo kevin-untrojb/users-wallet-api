@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/kevin-untrojb/users-wallet-api/business/wallet"
 	"github.com/kevin-untrojb/users-wallet-api/internal/mysql"
@@ -28,10 +29,12 @@ func (g gateway) Create(ctx context.Context, u user) (int64, error) {
 func (g gateway) Get(ctx context.Context, userID int64) (user, error) {
 	user, err := g.db.GetUser(ctx, userID)
 	if err != nil {
+		log.Println(fmt.Sprintf("error gettting user %d: %s", userID, err.Error()))
 		return user, fmt.Errorf("users_error: error getting user form db")
 	}
 	user.Wallets, err = g.wallet.GetWalletsFroUser(ctx, userID)
 	if err != nil {
+		log.Println(fmt.Sprintf("error gettting wallets of user %d: %s", userID, err.Error()))
 		return user, fmt.Errorf("users_error: error getting transactions form db")
 	}
 	return user, nil
