@@ -1,7 +1,10 @@
 # users-wallet-api
+![technology Go](https://img.shields.io/badge/technology-go-blue.svg)
 
+Api diseñada para alta y obtención de usuarios, nueva transacción y search de transacciones
+Se utilizó el framework gin-gonic y se utilizó docker
 
-#Ejecución de la api
+##Ejecución de la api
 
 Para buildear la API localmente  se debe ejecutar desde la raíz del proyecto:
 
