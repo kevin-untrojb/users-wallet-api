@@ -1,4 +1,4 @@
-all: dependencies format imports mocking test
+test: dependencies format imports mocking test
 dependencies:
 	@echo "Syncing dependencies with go mod tidy"
 	@go mod tidy
@@ -11,12 +11,14 @@ imports:
 mocking:
 	@echo "generating mock files recursively"
 	@go generate ./...
-test:
+testing:
 	@echo "Running tests"
 	@go test ./... -covermode=atomic -coverpkg=./... -count=1 -race
-run:
+build-api:
 	@echo "Running Application"
 	@docker-compose -f build/docker-compose.yml up --build api mysqldb
 clean:
 	@echo "Cleaning docker containers"
+	@rm -r build/mysql/db
 	@docker-compose -f build/docker-compose.yml down -v
+
