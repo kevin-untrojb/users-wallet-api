@@ -34,7 +34,6 @@ func (g gateway) SearchTransactionsForUser(ctx context.Context, userID int64, pa
 
 func (g gateway) NewTransaction(ctx context.Context, nt Transaction) (int64, error) {
 	return g.db.NewTransaction(ctx, nt)
-
 }
 
 func NewGateway(dbClient mysql.Client) Gateway {

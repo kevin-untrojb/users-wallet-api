@@ -25,7 +25,11 @@ func newDao(db mysql.Client) MysqlDao {
 }
 
 const (
+	insertTransaction = "insert into transaction (wallet_id, transaction_type, amount, date_created) VALUES ( ?, ?, ?, UTC_TIMESTAMP())"
+
 	getWalletsAndCurrenciesForUser = "SELECT w.ID, w.CURRENT_BALANCE, c.NAME, c.EXPONENT FROM WALLET w INNER JOIN USER u ON u.ID = w.USER_ID INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID WHERE u.ID = ?"
+	getWalletAnCurencyByWalletID   = "SELECT w.ID, w.CURRENT_BALANCE, c.NAME, c.EXPONENT FROM WALLET w INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID WHERE w.ID = ?"
+	updateBalanceOFAWallet         = "UPDATE WALLET w SET w.CURRENT_BALANCE = ? WHERE w.ID = ?"
 )
 
 func (d dao) SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error) {
@@ -88,7 +92,7 @@ func (d dao) SearchTransactions(ctx context.Context, userID int64, params *Searc
 
 func (d dao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
 	var walletResults []Wallet
-	var exponent int64
+	var ok bool
 
 	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
 	defer cancel()
@@ -105,19 +109,65 @@ func (d dao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, err
 
 		err := rows.Scan(&currentWallet.ID,
 			&currentWallet.CurrentBalance,
-			&currentWallet.CurrencyName, &exponent)
+			&currentWallet.CurrencyName, &currentWallet.CointExponent)
+
 		if err != nil {
 			// todo handle
 			return walletResults, err
 		}
-		currentWallet.Currency = CurrencyFactory(currentWallet.CurrencyName, exponent)
+
+		currentWallet.Coin, ok = newCoin(currentWallet.CurrentBalance, currentWallet.CointExponent)
+		if !ok {
+			return nil, fmt.Errorf("error converting %s into a number", currentWallet.CurrentBalance)
+		}
+
 		walletResults = append(walletResults, currentWallet)
 	}
 	return walletResults, nil
 }
 
 func (d dao) NewTransaction(ctx context.Context, transaction Transaction) (int64, error) {
-	return 0, nil
+	var lastID int64
+	var w Wallet
+
+	err := d.db.WithTransaction(func(trx *sql.Tx) error {
+		ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
+		defer cancel()
+
+		row := d.db.RawQueryRow(ctx, trx, getWalletAnCurencyByWalletID, transaction.WalletID)
+		err := row.Scan(&w.ID, &w.CurrentBalance, &w.CurrencyName, &w.CointExponent)
+		if err != nil {
+			return err
+		}
+		if err := w.TryNewTransaction(transaction); err != nil {
+			return err
+		}
+		exec, err := d.db.RawExec(ctx, trx, updateBalanceOFAWallet, w.GetCurrentBalance(), w.ID)
+		if err != nil {
+			// todo handler
+			return err
+		}
+		_, err = exec.LastInsertId()
+		if err != nil {
+			// todo handler
+			return err
+		}
+
+		exec, err = d.db.RawExec(ctx, trx, insertTransaction, transaction.WalletID, transaction.TransactionType, transaction.Amount)
+		if err != nil {
+			// todo handler
+			return err
+		}
+		lastID, err = exec.LastInsertId()
+		if err != nil {
+			// todo handler
+			return err
+		}
+
+		return nil
+	})
+
+	return lastID, err
 }
 
 func CreateSearchQuery(userID int64, params *SearchRequestParams, isCountQuery bool) (string, []interface{}, error) {

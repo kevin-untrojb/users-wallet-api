@@ -24,14 +24,14 @@ func NewHandler(gtw Gateway) Handler {
 
 func (h handler) NewTransaction(c *gin.Context) {
 	ctx := c.Request.Context()
-	params, err := getTransactionParams(c)
+	transaction, err := getTransactionParams(c)
 	if err != nil {
 		// todo handler
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	transactionID, err := h.gtw.NewTransaction(ctx, params)
+	transactionID, err := h.gtw.NewTransaction(ctx, transaction)
 	if err != nil {
 		// todo handler
 		c.JSON(http.StatusInternalServerError, err)
@@ -64,6 +64,24 @@ func (h handler) SearchTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func getTransactionParams(c *gin.Context) (Transaction, interface{}) {
-	return Transaction{}, nil
+func getTransactionParams(c *gin.Context) (Transaction, error) {
+	var transaction Transaction
+	var err error
+
+	if err := c.BindJSON(&transaction); err != nil {
+		//todo log
+		return transaction, err
+	}
+	transaction.UserID, err = utils.ConvertStringToInt64(c.Param("user_id"))
+	if err != nil {
+		//todo log
+		return transaction, err
+	}
+	transaction.WalletID, err = utils.ConvertStringToInt64(c.Param("wallet_id"))
+	if err != nil {
+		//todo log
+		return transaction, err
+	}
+
+	return transaction, nil
 }
