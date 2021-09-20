@@ -6,19 +6,20 @@ Se utilizó el framework gin-gonic y se utilizó docker
 
 ## Ejecución de la api
 
-Para buildear la API localmente  se debe ejecutar desde la raíz del proyecto:
+Para buildear la API localmente se debe ejecutar desde la raíz del proyecto:
 
 ```bash
 make build-api
 ```
 
-Para borrar las dependencias y cerrar ls containers de docker :
+Para eliminar las carpetas que se utilizan para el buildeo
+y cerrar los containers de docker :
 
 ```bash
 make clean
 ```
 
-Para ejecutar todos los test :
+Para ejecutar todos los test locales y formato :
 
 ```bash
 make test-all
@@ -60,6 +61,7 @@ ejemplo de response
 ```
 
 ### Crear usuario usuario
+Se crea un usuario por default, sin billeteras
 Ejemplo de request
 ```http
 POST/users
@@ -86,11 +88,13 @@ body de response
 }
 ```
 ### Search de transacciones
-Parametros opcionales para el search:
+Parámetros opcionales para el search:
+
     currency : puede ser "ARS","BTC","USDT"
     tramsaction_type : puede ser "deposit" o "extraction"
     limit : maximo de elementos (10 por default)
     offset: offset de elementos (0 por default)
+
 Ejemplo de request
 ```http
 GET/users/:user_id/wallet
@@ -151,3 +155,4 @@ ejemplo deresponse
   "currency": ""
 }
 ```
+
