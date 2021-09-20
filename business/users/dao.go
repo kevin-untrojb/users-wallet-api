@@ -24,7 +24,7 @@ func newDao(db mysql.Client) MysqlDao {
 }
 
 const (
-	insertUserQuery = ""
+	insertUserQuery = "insert into user (first_name, last_name, alias, email, date_created) VALUES ( ?, ?, ?, ?, UTC_TIMESTAMP())"
 	checkUserQuery  = "select count(*) from user u where u.email = ? or u.alias = ?"
 	getUserQuery    = "select ID, NAME, SURNAME,ALIAS, EMAIL from user where ID = ?"
 )
