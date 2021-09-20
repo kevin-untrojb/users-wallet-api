@@ -14,7 +14,7 @@ services:
     - "MYSQL_USER=test_db"
     - MYSQL_PASSWORD=root
     - "MYSQL_DATABASE=test_db"
-    - "MYSQL_HOST=test_db"
+    - "MYSQL_HOST=mysqldb"
     - "MYSQL_PORT=3306"
     - MYSQL_ROOT_PASSWORD=root
     - "MYSQL_ALLOW_EMPTY_PASSWORD=test_db"
@@ -35,4 +35,4 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db:/var/lib/mysql
+      - ./mysql/db:/var/lib/mysql
