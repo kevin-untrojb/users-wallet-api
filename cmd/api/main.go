@@ -40,9 +40,8 @@ func routerMapping(router *gin.Engine) {
 
 	router.GET("/ping", ping)
 
-	router.POST("/users/:user_id/wallet/:wallet_id/transaction", accountHandler.NewTransaction)
+	router.POST("/users/:user_id/wallet/:wallet_id/new_transaction", accountHandler.NewTransaction)
 	router.GET("/users/:user_id/wallet", accountHandler.SearchTransactions)
-
 
 	router.GET("/users/:user_id", usersHandler.Get)
 	router.POST("/users", usersHandler.Post)

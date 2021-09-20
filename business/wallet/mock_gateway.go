@@ -50,10 +50,10 @@ func (mr *MockGatewayMockRecorder) GetWalletsFroUser(arg0, arg1 interface{}) *go
 }
 
 // NewTransaction mocks base method.
-func (m *MockGateway) NewTransaction(ctx context.Context, nt Transaction) (int64, error) {
+func (m *MockGateway) NewTransaction(ctx context.Context, nt Transaction) (Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewTransaction", ctx, nt)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

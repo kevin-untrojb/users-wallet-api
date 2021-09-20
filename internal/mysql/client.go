@@ -37,21 +37,21 @@ const (
 )
 
 var (
-	mysqlPassword = os.Getenv("MYSQL_PASSWORD")
-	mysqlUser     = os.Getenv("MYSQL_USER")
-	mysqlDB       = os.Getenv("MYSQL_DATABASE")
-	mysqlPort     = os.Getenv("MYSQL_PORT")
-	mysqlHost     = os.Getenv("MYSQL_HOST")
+	mysqlPassword         = os.Getenv("MYSQL_PASSWORD")
+	mysqlUser             = os.Getenv("MYSQL_USER")
+	mysqlDB               = os.Getenv("MYSQL_DATABASE")
+	mysqlPort             = os.Getenv("MYSQL_PORT")
+	mysqlHost             = os.Getenv("MYSQL_HOST")
 	mysqlConnectionString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", mysqlUser, mysqlPassword, mysqlHost, mysqlPort, mysqlDB)
 )
 
 func NewClient() Client {
-	MakeClient = makeMockClient
+	MakeClient = makeRealClient
 
-	if host.IsProduction() {
-		MakeClient = makeRealClient
+	if !host.IsProduction() {
+		MakeClient = makeMockClient
 	}
-	time.Sleep(2 * time.Second)
+
 	db, err := MakeClient(driverName, mysqlConnectionString, MinConnections, LongTimeout)
 	if err != nil {
 		panic(err)

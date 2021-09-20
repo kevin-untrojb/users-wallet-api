@@ -12,7 +12,7 @@ import (
 //go:generate mockgen -destination=mock_gateway.go -package=users -source=gateway.go Gateway
 
 type Gateway interface {
-	Create(context.Context, user) (int64, error)
+	Create(context.Context, user) (user, error)
 
 	Get(context.Context, int64) (user, error)
 }
@@ -22,7 +22,7 @@ type gateway struct {
 	wallet wallet.Gateway
 }
 
-func (g gateway) Create(ctx context.Context, u user) (int64, error) {
+func (g gateway) Create(ctx context.Context, u user) (user, error) {
 	return g.db.InsertUser(ctx, u)
 }
 

@@ -13,7 +13,7 @@ import (
 //go:generate mockgen -destination=mock_dao.go -package=wallet -source=dao.go MySql
 type MysqlDao interface {
 	SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error)
-	NewTransaction(ctx context.Context, transaction Transaction) (int64, error)
+	NewTransaction(ctx context.Context, transaction Transaction) (Transaction, error)
 	GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error)
 }
 
@@ -111,14 +111,14 @@ func (d dao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, err
 
 		err := rows.Scan(&currentWallet.ID,
 			&currentWallet.CurrentBalance,
-			&currentWallet.CurrencyName, &currentWallet.CointExponent)
+			&currentWallet.CurrencyName, &currentWallet.CoinExponent)
 
 		if err != nil {
 			// todo handle
 			return walletResults, err
 		}
 
-		currentWallet.Coin, ok = newCoin(currentWallet.CurrentBalance, currentWallet.CointExponent)
+		currentWallet.Coin, ok = newCoin(currentWallet.CurrentBalance, currentWallet.CoinExponent)
 		if !ok {
 			return nil, fmt.Errorf("error converting %s into a number", currentWallet.CurrentBalance)
 		}
@@ -128,8 +128,7 @@ func (d dao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, err
 	return walletResults, nil
 }
 
-func (d dao) NewTransaction(ctx context.Context, transaction Transaction) (int64, error) {
-	var lastID int64
+func (d dao) NewTransaction(ctx context.Context, transaction Transaction) (Transaction, error) {
 	var w Wallet
 	var ok bool
 
@@ -138,46 +137,46 @@ func (d dao) NewTransaction(ctx context.Context, transaction Transaction) (int64
 		defer cancel()
 
 		row := d.db.RawQueryRow(ctx, trx, getWalletAnCurrencyByWalletID, transaction.WalletID)
-		err := row.Scan(&w.ID, &w.CurrentBalance, &w.CurrencyName, &w.CointExponent)
+		err := row.Scan(&w.ID, &w.CurrentBalance, &w.CurrencyName, &w.CoinExponent)
 		if err != nil {
-			log.Println(fmt.Sprintf("error getting wallet %d : %s",transaction.WalletID,err.Error()))
+			log.Println(fmt.Sprintf("error getting wallet %d : %s", transaction.WalletID, err.Error()))
 			return err
 		}
-		w.Coin,ok = newCoin(w.CurrentBalance,w.CointExponent)
-		if !ok{
+		w.Coin, ok = newCoin(w.CurrentBalance, w.CoinExponent)
+		if !ok {
 			log.Println(fmt.Sprintf("error creating a new coin"))
 			return fmt.Errorf("error creating a new coin")
 		}
 		if err := w.TryNewTransaction(transaction); err != nil {
-			log.Println(fmt.Sprintf("error tring transaction wallet %d : %s",transaction.WalletID,err.Error()))
+			log.Println(fmt.Sprintf("error tring transaction wallet %d : %s", transaction.WalletID, err.Error()))
 			return err
 		}
 		exec, err := d.db.RawExec(ctx, trx, updateBalanceOFAWallet, w.GetCurrentBalance(), w.ID)
 		if err != nil {
-			log.Println(fmt.Sprintf("error updating wallet %d: %s",w.ID,err.Error()))
+			log.Println(fmt.Sprintf("error updating wallet %d: %s", w.ID, err.Error()))
 			return err
 		}
 		_, err = exec.LastInsertId()
 		if err != nil {
-			log.Println(fmt.Sprintf("error updating wallet id %d: %s",w.ID,err.Error()))
+			log.Println(fmt.Sprintf("error updating wallet id %d: %s", w.ID, err.Error()))
 			return err
 		}
 
 		exec, err = d.db.RawExec(ctx, trx, insertTransaction, transaction.WalletID, transaction.TransactionType, transaction.Amount)
 		if err != nil {
-			log.Println(fmt.Sprintf("error inserting new transaction :%s",err.Error()))
+			log.Println(fmt.Sprintf("error inserting new transaction :%s", err.Error()))
 			return err
 		}
-		lastID, err = exec.LastInsertId()
+		transaction.ID, err = exec.LastInsertId()
 		if err != nil {
-			log.Println(fmt.Sprintf("error inserting new transaction %d:%s",lastID,err.Error()))
+			log.Println(fmt.Sprintf("error inserting new transaction %d:%s", transaction.ID, err.Error()))
 			return err
 		}
 
 		return nil
 	})
 
-	return lastID, err
+	return transaction, err
 }
 
 func CreateSearchQuery(userID int64, params *SearchRequestParams, isCountQuery bool) (string, []interface{}, error) {

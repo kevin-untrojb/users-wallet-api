@@ -11,7 +11,7 @@ import (
 
 //go:generate mockgen -destination=mock_dao.go -package=users -source=dao.go MySql
 type MysqlDao interface {
-	InsertUser(context.Context, user) (int64, error)
+	InsertUser(context.Context, user) (user, error)
 
 	GetUser(context.Context, int64) (user, error)
 }
@@ -30,8 +30,7 @@ const (
 	getUserQuery    = "select id, first_name, last_name, alias, email from user where id = ?"
 )
 
-func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
-	var lastUserID int64
+func (d dao) InsertUser(ctx context.Context, u user) (user, error) {
 	ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
 	defer cancel()
 
@@ -44,6 +43,7 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 			return err
 		}
 		if count != 0 {
+			log.Println("error, email or alias is already used")
 			return fmt.Errorf("error, email or alias is already used")
 		}
 
@@ -52,14 +52,14 @@ func (d dao) InsertUser(ctx context.Context, u user) (int64, error) {
 			log.Println(fmt.Sprintf("error inserting user into db query:%s, error: %s", insertUserQuery, err.Error()))
 			return err
 		}
-		lastUserID, err = exec.LastInsertId()
+		u.ID, err = exec.LastInsertId()
 		if err != nil {
 			log.Println(fmt.Sprintf("error last inserting id inserting error: %s", err.Error()))
 			return err
 		}
 		return nil
 	})
-	return lastUserID, err
+	return u, err
 }
 
 func (d dao) GetUser(ctx context.Context, userID int64) (user, error) {

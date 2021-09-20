@@ -10,7 +10,7 @@ import (
 type Gateway interface {
 	GetWalletsFroUser(context.Context, int64) ([]Wallet, error)
 	SearchTransactionsForUser(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error)
-	NewTransaction(ctx context.Context, nt Transaction) (int64, error)
+	NewTransaction(ctx context.Context, nt Transaction) (Transaction, error)
 }
 type gateway struct {
 	db MysqlDao
@@ -32,7 +32,7 @@ func (g gateway) SearchTransactionsForUser(ctx context.Context, userID int64, pa
 	return g.db.SearchTransactions(ctx, userID, params)
 }
 
-func (g gateway) NewTransaction(ctx context.Context, nt Transaction) (int64, error) {
+func (g gateway) NewTransaction(ctx context.Context, nt Transaction) (Transaction, error) {
 	return g.db.NewTransaction(ctx, nt)
 }
 

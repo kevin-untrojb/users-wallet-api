@@ -28,18 +28,18 @@ func (h handler) NewTransaction(c *gin.Context) {
 	ctx := c.Request.Context()
 	transaction, err := getTransactionParams(c)
 	if err != nil {
-		log.Println(fmt.Sprintf("error getting params %s",err.Error()))
+		log.Println(fmt.Sprintf("error getting params %s", err.Error()))
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	transactionID, err := h.gtw.NewTransaction(ctx, transaction)
+	newTransaction, err := h.gtw.NewTransaction(ctx, transaction)
 	if err != nil {
 		log.Println(fmt.Sprintf("error creating new transaction %s", err.Error()))
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, NewTransactionResponse{transactionID})
+	c.JSON(http.StatusOK, newTransaction)
 }
 
 func (h handler) SearchTransactions(c *gin.Context) {
@@ -73,17 +73,21 @@ func getTransactionParams(c *gin.Context) (Transaction, error) {
 	var err error
 
 	if err := c.BindJSON(&transaction); err != nil {
-		log.Println(fmt.Sprintf("error json format: %s",err.Error()))
+		log.Println(fmt.Sprintf("error json format: %s", err.Error()))
 		return transaction, err
+	}
+	if err:= transaction.ValidateFields(); err != nil{
+		log.Println(fmt.Sprintf("error invalid body: %s", err.Error()))
+		return transaction,err
 	}
 	transaction.UserID, err = utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {
-		log.Println(fmt.Sprintf("error parsing user_id: %s",err.Error()))
+		log.Println(fmt.Sprintf("error parsing user_id: %s", err.Error()))
 		return transaction, err
 	}
 	transaction.WalletID, err = utils.ConvertStringToInt64(c.Param("wallet_id"))
 	if err != nil {
-		log.Println(fmt.Sprintf("error parsing wallet_id: %s",err.Error()))
+		log.Println(fmt.Sprintf("error parsing wallet_id: %s", err.Error()))
 		return transaction, err
 	}
 

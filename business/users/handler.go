@@ -38,13 +38,13 @@ func (h handler) Post(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	lasInsertedID, err := h.gtw.Create(ctx, u)
+	newUser, err := h.gtw.Create(ctx, u)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, NewUserResponse{lasInsertedID})
+	c.JSON(http.StatusOK, newUser)
 }
 
 func (h handler) Get(c *gin.Context) {

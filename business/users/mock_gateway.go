@@ -35,10 +35,10 @@ func (m *MockGateway) EXPECT() *MockGatewayMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockGateway) Create(arg0 context.Context, arg1 user) (int64, error) {
+func (m *MockGateway) Create(arg0 context.Context, arg1 user) (user, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(user)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

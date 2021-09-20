@@ -50,10 +50,10 @@ func (mr *MockMysqlDaoMockRecorder) GetWalletsForUser(ctx, userID interface{}) *
 }
 
 // NewTransaction mocks base method.
-func (m *MockMysqlDao) NewTransaction(ctx context.Context, transaction Transaction) (int64, error) {
+func (m *MockMysqlDao) NewTransaction(ctx context.Context, transaction Transaction) (Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewTransaction", ctx, transaction)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

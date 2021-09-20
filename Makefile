@@ -1,4 +1,4 @@
-test: dependencies format imports mocking test
+test-all: dependencies format imports mocking testing
 dependencies:
 	@echo "Syncing dependencies with go mod tidy"
 	@go mod tidy

@@ -57,13 +57,13 @@ func TestGetWalletsForUserOKResponse(t *testing.T) {
 	walletA.CurrentBalance = ""
 
 	wallets := []Wallet{
-		{ID: int64(1), CurrentBalance: "0.12321", CurrencyName: "BTC", CointExponent: 8},
-		{ID: int64(2), CurrentBalance: "12312.23", CurrencyName: "ARS", CointExponent: 2},
+		{ID: int64(1), CurrentBalance: "0.12321", CurrencyName: "BTC", CoinExponent: 8},
+		{ID: int64(2), CurrentBalance: "12312.23", CurrencyName: "ARS", CoinExponent: 2},
 	}
 
 	rows := sqlmock.NewRows([]string{"ID", "CURRENT_BALANCE", "NAME", "EXPONENT"})
 	for _, w := range wallets {
-		rows.AddRow(w.ID, w.CurrentBalance, w.CurrencyName, w.CointExponent)
+		rows.AddRow(w.ID, w.CurrentBalance, w.CurrencyName, w.CoinExponent)
 	}
 
 	dbMockClient.AddExpectedQueryWithRows(getWalletsAndCurrenciesForUser, rows, userID)
@@ -74,7 +74,7 @@ func TestGetWalletsForUserOKResponse(t *testing.T) {
 		assert.Equal(t, walletResponse.ID, wallets[i].ID)
 		assert.Equal(t, walletResponse.CurrentBalance, wallets[i].CurrentBalance)
 		assert.Equal(t, walletResponse.CurrencyName, wallets[i].CurrencyName)
-		assert.Equal(t, walletResponse.CointExponent, wallets[i].CointExponent)
+		assert.Equal(t, walletResponse.CoinExponent, wallets[i].CoinExponent)
 	}
 
 }
