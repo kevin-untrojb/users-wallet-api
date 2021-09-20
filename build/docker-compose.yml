@@ -1,12 +1,38 @@
-version: '3.1'
+version: "3.3"
 services:
-  mysqldb:
-    image: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test_db
+  api:
+    build:
+      context: ../
+      dockerfile: build/api/Dockerfile
+    restart: on-failure
+    depends_on:
+      - "mysqldb"
     ports:
-      - "3307:3306"
+      - "8080:8080"
+    environment:
+    - "ENVIRONMENT=prod"
+    - "MYSQL_USER=test_db"
+    - MYSQL_PASSWORD=root
+    - "MYSQL_DATABASE=test_db"
+    - "MYSQL_HOST=test_db"
+    - "MYSQL_PORT=3306"
+    - MYSQL_ROOT_PASSWORD=root
+    - "MYSQL_ALLOW_EMPTY_PASSWORD=test_db"
+    - "MYSQL_RANDOM_ROOT_PASSWORD=test_db"
+
+  mysqldb:
+    container_name: mysqldb
+    build:
+      context: ./
+      dockerfile: mysql/Dockerfile
+    environment:
+    - "MYSQL_USER=test_db"
+    - MYSQL_PASSWORD=root
+    - "MYSQL_DATABASE=test_db"
+    - MYSQL_ROOT_PASSWORD=root
+    - "MYSQL_ALLOW_EMPTY_PASSWORD=test_db"
+    - "MYSQL_RANDOM_ROOT_PASSWORD=test_db"
+    ports:
+      - "3306:3306"
     volumes:
-      - ./:/init_database.sql
+      - ./db:/var/lib/mysql

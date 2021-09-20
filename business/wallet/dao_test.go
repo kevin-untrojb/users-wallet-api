@@ -78,3 +78,7 @@ func TestGetWalletsForUserOKResponse(t *testing.T) {
 	}
 
 }
+
+func TestNewTransactionOK(t *testing.T){
+
+}

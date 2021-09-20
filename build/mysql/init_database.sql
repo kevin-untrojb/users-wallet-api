@@ -9,13 +9,14 @@ CREATE TABLE `user` (
                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
+/*
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
+INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
 
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
-INSERT INTO `user` (`id`,`first_name`, `last_name`, `alias`, `email`,`date_created`) VALUES ()
 
 
 
@@ -25,7 +26,7 @@ CREATE TABLE `currency` (
                           `name` varchar(255) NOT NULL,
                           `exponent` int NOT NULL,
                           `current_balance` varchar(255) NOT NULL,
-                          PRIMARY KEY (`id`),
+                          PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
@@ -39,7 +40,6 @@ CREATE TABLE `wallet` (
                         PRIMARY KEY (`id`),
                         FOREIGN KEY (`user_id`) REFERENCES user(`id`),
                         FOREIGN KEY (`currency_id`) REFERENCES currency(`id`)
-
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `transaction`;
@@ -50,5 +50,8 @@ CREATE TABLE `transaction` (
                           `amount` varchar(255) NOT NULL,
                           `date_created` timestamp NOT NULL,
                           PRIMARY KEY (`id`),
-                          FOREIGN KEY (`wallet_id`) REFERENCES wallet(`id`),
+                          FOREIGN KEY (`wallet_id`) REFERENCES wallet(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+
+*/

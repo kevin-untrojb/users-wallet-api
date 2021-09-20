@@ -3,9 +3,9 @@ package host
 import "os"
 
 var (
-	env = os.Getenv("Environment")
+	env = os.Getenv("ENVIRONMENT")
 )
 
 func IsProduction() bool {
-	return env == "production"
+	return env == "prod"
 }

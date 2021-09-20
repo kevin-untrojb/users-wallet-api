@@ -14,3 +14,6 @@ mocking:
 test:
 	@echo "Running tests"
 	@go test ./... -covermode=atomic -coverpkg=./... -count=1 -race
+run:
+	@echo "Running Application"
+	@docker-compose -f build/docker-compose.yml up --build api mysqldb

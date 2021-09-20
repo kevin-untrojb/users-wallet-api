@@ -15,6 +15,7 @@ func (c *Coin) GetAmount() string {
 func (c *Coin) IsNegative() bool {
 	return c.value.Signbit()
 }
+
 func (c *Coin) Add(addValue string) bool {
 	b, ok := new(big.Float).SetString(addValue)
 	if !ok {

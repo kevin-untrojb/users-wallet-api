@@ -4,9 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-sql-driver/mysql"
 	"github.com/kevin-untrojb/users-wallet-api/internal/host"
 )
 
@@ -33,14 +36,31 @@ const (
 	LimitSearchRows = 100
 )
 
+var (
+	mysqlPassword = os.Getenv("MYSQL_PASSWORD")
+	mysqlUser     = os.Getenv("MYSQL_USER")
+	mysqlDB       = os.Getenv("MYSQL_DATABASE")
+	mysqlPort    = os.Getenv("MYSQL_PORT")
+	mysqlConnectionString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8",mysqlUser,mysqlPassword,mysqlDB,mysqlPort,mysqlDB)
+	dsn = fmt.Sprintf("user=%s password=%s host=%s port=%s database=%s sslmode=disable",mysqlUser, mysqlPassword, "test_db", mysqlPort, "mysqldb")
+
+)
+
 func NewClient() Client {
+
+	dbConfig := mysql.NewConfig()
+	dbConfig.User = mysqlUser
+	dbConfig.Passwd = mysqlPassword
+	dbConfig.Addr = fmt.Sprintf("%s:%s","mysqldb",mysqlPort)
+	dbConfig.DBName = "test_db"
+	dbConfig.Net = "tcp"
 	MakeClient = makeMockClient
 
 	if host.IsProduction() {
 		MakeClient = makeRealClient
 	}
-
-	db, err := MakeClient(driverName, "", MinConnections, LongTimeout)
+	time.Sleep(2 * time.Second)
+	db, err := MakeClient(driverName, "test_db:root@tcp(mysqldb:3306)/test_db", MinConnections, LongTimeout)
 	if err != nil {
 		panic(err)
 	}
