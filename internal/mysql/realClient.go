@@ -76,6 +76,7 @@ func (c realClient) WithTransaction(txFunc func(*sql.Tx) error) error {
 }
 
 func makeRealClient(driver, dataSourceName string, maxConnections int, connMaxLifeTime time.Duration) (Client, error) {
+	time.Sleep(1*time.Second)
 	db, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return nil, err
