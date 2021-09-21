@@ -164,7 +164,7 @@ ejemplo deresponse
 
     - Manejo de errores: 
         * Middleware para loguear correctamente el error.
-        * Crear un tipo de error custom para la api.
+        * Terminar de implementar un error custom para la api.
         de esta forma se podria manejar mejor los status code
     
     - Manejo de logs:
@@ -173,9 +173,3 @@ ejemplo deresponse
 
     - Manejo de metricas:
         * Agregar mecanismos de metricas (data-dog, new relic, etc.)
-    
-    -Bloqueo de recusos:
-        * Si se hacen dos trasacciones simultaneas para el mismo user se va bloquear la base de datos
-        mientras se esta procesando el primero.
-        una solución para no lockear el recurso es implementar un servicio externo de lock
-        de esta forma si se esta utilizando el recurso falla el request que se estaria prcesando en simultaneo
