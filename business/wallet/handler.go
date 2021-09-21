@@ -76,9 +76,9 @@ func getTransactionParams(c *gin.Context) (Transaction, error) {
 		log.Println(fmt.Sprintf("error json format: %s", err.Error()))
 		return transaction, err
 	}
-	if err:= transaction.ValidateFields(); err != nil{
+	if err := transaction.ValidateFields(); err != nil {
 		log.Println(fmt.Sprintf("error invalid body: %s", err.Error()))
-		return transaction,err
+		return transaction, err
 	}
 	transaction.UserID, err = utils.ConvertStringToInt64(c.Param("user_id"))
 	if err != nil {

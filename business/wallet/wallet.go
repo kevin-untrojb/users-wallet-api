@@ -2,9 +2,10 @@ package wallet
 
 import (
 	"fmt"
-	"github.com/kevin-untrojb/users-wallet-api/utils"
 	"log"
 	"time"
+
+	"github.com/kevin-untrojb/users-wallet-api/utils"
 )
 
 const (

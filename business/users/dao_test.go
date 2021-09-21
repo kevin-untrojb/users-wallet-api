@@ -63,9 +63,9 @@ func TestInsertUserOK(t *testing.T) {
 
 	dbMockClient.AddExpectedExec(insertUserQuery, sqlmock.NewResult(insertedID, 1),
 		userMock.FirstName, userMock.LastName, userMock.Alias, userMock.Email)
-	lastID, err := newDao(dbMockClient).InsertUser(ctx, userMock)
+	newUser, err := newDao(dbMockClient).InsertUser(ctx, userMock)
 	assert.Nil(t, err)
-	assert.Equal(t, lastID, insertedID)
+	assert.Equal(t, newUser.ID, insertedID)
 }
 
 func TestInsertUserErrorInsertingUser(t *testing.T) {
