@@ -173,9 +173,3 @@ ejemplo deresponse
 
     - Manejo de metricas:
         * Agregar mecanismos de metricas (data-dog, new relic, etc.)
-    
-    -Bloqueo de recusos:
-        * Si se hacen dos trasacciones simultaneas para el mismo user se va bloquear la base de datos
-        mientras se esta procesando el primero.
-        una solución para no lockear el recurso es implementar un servicio externo de lock
-        de esta forma si se esta utilizando el recurso falla el request que se estaria prcesando en simultaneo

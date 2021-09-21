@@ -19,6 +19,5 @@ build-api:
 	@docker-compose -f build/docker-compose.yml up --build api mysqldb
 clean:
 	@echo "Cleaning docker containers"
-	@rm -r build/mysql/db
 	@docker-compose -f build/docker-compose.yml down -v
 
