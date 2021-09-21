@@ -6,20 +6,20 @@ Se utilizó el framework gin-gonic y se utilizó docker
 
 ## Ejecución de la api
 
-Para buildear la API localmente se debe ejecutar desde la raíz del proyecto:
+* Para buildear la API localmente se debe ejecutar desde la raíz del proyecto:
 
 ```bash
 make build-api
 ```
 
-Para eliminar las carpetas que se utilizan para el buildeo
+* Para eliminar las carpetas que se utilizan para el buildeo
 y cerrar los containers de docker :
 
 ```bash
 make clean
 ```
 
-Para ejecutar todos los test locales y formato :
+* Para ejecutar todos los test locales y formato :
 
 ```bash
 make test-all
