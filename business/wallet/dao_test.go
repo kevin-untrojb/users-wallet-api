@@ -27,10 +27,10 @@ func TestSearchTransactionForUserShouldReturnOK(t *testing.T) {
 		{ID: int64(2), TransactionType: "Deposit", Amount: "0.0033200", Date: time.Time{}, CurrencyName: "BTC"},
 	}
 
-	countQuery := "SELECT count(*) FROM TRANSACTION t INNER JOIN WALLET w ON t.WALLET_ID = w.ID INNER JOIN USER u ON u.ID = w.USER_ID INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID WHERE c.NAME=? AND u.ID =? AND m.TRANSACTION_TYPE=?"
+	countQuery := "SELECT count(*) FROM transaction t INNER JOIN wallet w ON t.wallet_id = w.id INNER JOIN user u ON u.id = w.user_id INNER JOIN currency c on c.id = w.currency_id WHERE c.name=? AND u.id =? AND t.transaction_type=?"
 	totalCount := 10
 
-	searchQuery := "SELECT t.ID, t.TRANSACTION_TYPE, t.AMOUNT, t.DATE_CREATED, c.NAME FROM TRANSACTION INNER JOIN WALLET w ON t.WALLET_ID = w.ID INNER JOIN USER u ON u.ID = w.USER_ID INNER JOIN CURRENCY c on c.id = w.CURRENCY_ID WHERE c.NAME=? AND u.ID =? AND m.TRANSACTION_TYPE=? ORDER BY m.DATE_CREATED DESC LIMIT ? OFFSET ?\n"
+	searchQuery := "SELECT t.id, t.transaction_type, t.amount, t.date_created, c.name FROM transaction t INNER JOIN wallet w ON t.wallet_id = w.id INNER JOIN user u ON u.id = w.user_id INNER JOIN currency c on c.id = w.currency_id WHERE c.name=? AND u.id =? AND t.transaction_type=? ORDER BY t.date_created DESC LIMIT ? OFFSET ?"
 	countRows := sqlmock.NewRows([]string{"COUNT"}).AddRow(totalCount)
 
 	dbMockClient.AddExpectedQueryWithRows(countQuery, countRows, params.Currency, userID, params.MovementType)
@@ -80,5 +80,37 @@ func TestGetWalletsForUserOKResponse(t *testing.T) {
 }
 
 func TestNewTransactionOK(t *testing.T) {
+	ctx := context.Background()
+	dbMockClient := mysql.Connect()
+	newTransactionID := int64(99)
+
+	mockTransaction := Transaction{
+		WalletID: int64(1),
+		TransactionType: "deposit",
+		UserID: int64(1),
+		Amount: "0.00231000",
+	}
+
+
+	w := Wallet{
+		ID: int64(1),
+		CurrentBalance: "1.00000000",
+		CurrencyName: "BTC",
+		CoinExponent: 8,
+	}
+	walletRows := sqlmock.NewRows([]string{"ID", "CURRENT_BALANCE", "NAME", "EXPONENT"})
+	walletRows.AddRow(w.ID, w.CurrentBalance, w.CurrencyName, w.CoinExponent)
+	dbMockClient.AddExpectedQueryWithRows(getWalletAnCurrencyByWalletID, walletRows, mockTransaction.WalletID)
+
+	dbMockClient.AddExpectedExec(updateBalanceOFAWallet, sqlmock.NewResult(1,1),"1.00231000",mockTransaction.WalletID )
+
+	dbMockClient.AddExpectedExec(insertTransaction, sqlmock.NewResult(newTransactionID,1),
+		mockTransaction.WalletID,mockTransaction.TransactionType,mockTransaction.Amount)
+
+
+	res, err := newDao(dbMockClient).NewTransaction(ctx,mockTransaction)
+	assert.Nil(t, err)
+
+	assert.Equal(t, res.ID, newTransactionID)
 
 }

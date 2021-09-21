@@ -22,12 +22,12 @@ func TestCreateUserShouldReturnOK(t *testing.T) {
 		LastName:  "asd",
 	}
 	mockDao := NewMockMysqlDao(mockCtrl)
-	mockDao.EXPECT().InsertUser(ctx, userMock).Return(newID, nil)
+	mockDao.EXPECT().InsertUser(ctx, userMock).Return(user{ID:newID}, nil)
 
 	gtw := &gateway{mockDao, nil}
-	lastID, err := gtw.Create(ctx, userMock)
+	newUser, err := gtw.Create(ctx, userMock)
 	assert.Nil(t, err)
-	assert.Equal(t, lastID, newID)
+	assert.Equal(t, newUser.ID, newID)
 }
 
 func TestGetUserAndWalletShouldReturnOK(t *testing.T) {

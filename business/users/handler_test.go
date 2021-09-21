@@ -30,7 +30,7 @@ func TestHandlerPostOK(t *testing.T) {
 	assert.Nil(t, err)
 
 	gtwMock := NewMockGateway(mockCtrl)
-	gtwMock.EXPECT().Create(ctx, userMock).Return(userID, nil)
+	gtwMock.EXPECT().Create(ctx, userMock).Return(user{ID: userID}, nil)
 	httpUsersHandler := NewHandler(gtwMock)
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 
