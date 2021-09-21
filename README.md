@@ -15,8 +15,6 @@ Se utilizó el framework gin-gonic y se utilizó docker
 make build-api
 ```
 
-
-
 * Para eliminar las carpetas que se utilizan para el buildeo
 y cerrar los containers de docker :
 
