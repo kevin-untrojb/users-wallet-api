@@ -3,6 +3,9 @@
 
 Api diseñada para alta y obtención de usuarios, nueva transacción y search de transacciones
 Se utilizó el framework gin-gonic y se utilizó docker
+## Modelo de datos 
+
+![Diagrama de entidad Relacion](der.jpg?raw=true "Diagrama de entidad Relacion")
 
 ## Ejecución de la api
 
