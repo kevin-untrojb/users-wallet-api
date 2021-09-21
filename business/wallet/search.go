@@ -27,6 +27,10 @@ func CreateSearchParams(c *gin.Context) (*SearchRequestParams, error) {
 		params.Limit = 10
 	}
 
+	if params.Limit > 500{
+		params.Limit = 500
+	}
+
 	params.Offset, err = strconv.Atoi(offset)
 	if err != nil {
 		params.Offset = 0
