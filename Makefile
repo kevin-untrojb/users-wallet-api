@@ -1,4 +1,5 @@
 test-all: dependencies format imports mocking testing
+clean : clean-docker remove-db
 dependencies:
 	@echo "Syncing dependencies with go mod tidy"
 	@go mod tidy
@@ -15,9 +16,11 @@ testing:
 	@echo "Running tests"
 	@go test ./... -covermode=atomic -coverpkg=./... -count=1 -race
 build-api:
-	@echo "Running Application"
+	@echo "Starting docker containers and application set up"
 	@docker-compose -f build/docker-compose.yml up --build api mysqldb
-clean:
+clean-docker:
 	@echo "Cleaning docker containers"
 	@docker-compose -f build/docker-compose.yml down -v
-
+remove-db:
+	@echo "Removing db folder"
+	@rm -r build/mysql/db
