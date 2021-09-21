@@ -164,7 +164,7 @@ ejemplo deresponse
 
     - Manejo de errores: 
         * Middleware para loguear correctamente el error.
-        * Crear un tipo de error custom para la api.
+        * Terminar de implementar un error custom para la api.
         de esta forma se podria manejar mejor los status code
     
     - Manejo de logs:
