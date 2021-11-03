@@ -15,6 +15,7 @@ type MysqlDao interface {
 	SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error)
 	NewTransaction(ctx context.Context, transaction Transaction) (Transaction, error)
 	GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error)
+	CreateDefaultWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error)
 }
 
 type dao struct {
@@ -27,11 +28,64 @@ func newDao(db mysql.Client) MysqlDao {
 
 const (
 	insertTransaction = "insert into transaction (wallet_id, transaction_type, amount, date_created) VALUES ( ?, ?, ?, UTC_TIMESTAMP())"
-
+	insertWallet      = "insert into wallet (user_id,currency_id,current_balance, date_created) VALUES ( ?, ?, ?, UTC_TIMESTAMP())"
+	// now i get all the currencies but in the future it can change fot the default ones
+	getDefaultCurrencies           = "Select c.id, c.name, c.exponent from currency c"
 	getWalletsAndCurrenciesForUser = "SELECT w.id, w.current_balance, c.name, c.exponent FROM wallet w INNER JOIN user u ON u.id = w.user_id INNER JOIN currency c on c.id = w.currency_id WHERE u.id = ?"
 	getWalletAnCurrencyByWalletID  = "SELECT w.id, w.current_balance, c.name, c.exponent FROM wallet w INNER JOIN currency c on c.id = w.currency_id WHERE w.ID = ?"
 	updateBalanceOFAWallet         = "UPDATE wallet w SET w.current_balance = ? WHERE w.id = ?"
 )
+
+func (d dao) CreateDefaultWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
+	createdWallets := make([]Wallet, 0)
+	err := d.db.WithTransaction(func(trx *sql.Tx) error {
+		currencies := make([]Currency, 0)
+		ctx, cancel := context.WithTimeout(ctx, mysql.MediumTimeout)
+		defer cancel()
+
+		rows, err := d.db.RawQuery(ctx, trx, getDefaultCurrencies)
+		if err != nil {
+			// todo log
+			return err
+		}
+		for rows.Next() {
+			cur := Currency{}
+			err := rows.Scan(&cur.ID, &cur.Name, &cur.Exponent)
+			if err != nil {
+				log.Println(fmt.Sprintf("row error: %s", err.Error()))
+				return err
+			}
+			currencies = append(currencies, cur)
+		}
+
+		for _, cur := range currencies {
+			coin, ok := newCoin("0", cur.Exponent)
+			if !ok {
+				return fmt.Errorf("error coin")
+			}
+			exec, err := d.db.RawExec(ctx, trx, insertWallet, userID, cur.ID, coin.GetAmount())
+			if err != nil {
+				// todo log
+				return err
+			}
+			lastID, err := exec.LastInsertId()
+			if err != nil {
+				log.Println(fmt.Sprintf("error creating a wallet to user %d: %s", userID, err.Error()))
+				return err
+			}
+			createdWallets = append(createdWallets, Wallet{
+				ID:             lastID,
+				CurrencyName:   cur.Name,
+				CurrentBalance: coin.GetAmount(),
+				Transactions:   nil,
+			})
+		}
+
+		return nil
+	})
+
+	return createdWallets, err
+}
 
 func (d dao) SearchTransactions(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error) {
 	var response SearchResponse

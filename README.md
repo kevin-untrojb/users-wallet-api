@@ -87,7 +87,23 @@ body de response
   "last_name":"last name",
   "alias":"alias",
   "email":"email@email.com",
-  "wallets": null
+  "wallets": [
+    {
+      "id": 7,
+      "currency_name": "ARS",
+      "current_balance": "0.00"
+    },
+    {
+      "id": 8,
+      "currency_name": "BTC",
+      "current_balance": "0.00000000"
+    },
+    {
+      "id": 9,
+      "currency_name": "USDT",
+      "current_balance": "0.00"
+    }
+  ]
 }
 ```
 ### Search de transacciones

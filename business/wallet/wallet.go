@@ -31,6 +31,11 @@ type Wallet struct {
 	Coin           *Coin         `json:"-"`
 	Transactions   []Transaction `json:"transactions,omitempty"`
 }
+type Currency struct {
+	ID       int64
+	Name     string
+	Exponent int
+}
 
 func (u *Transaction) ValidateFields() error {
 	if !utils.IsValidField(u.TransactionType) || !utils.IsValidField(u.Amount) {

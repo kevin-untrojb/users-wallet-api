@@ -9,11 +9,16 @@ import (
 //go:generate mockgen -destination=mock_gateway.go -package=wallet -source=gateway.go Gateway
 type Gateway interface {
 	GetWalletsFroUser(context.Context, int64) ([]Wallet, error)
+	CreateDefaultWalletsForUser(context.Context, int64) ([]Wallet, error)
 	SearchTransactionsForUser(ctx context.Context, userID int64, params *SearchRequestParams) (SearchResponse, error)
 	NewTransaction(ctx context.Context, nt Transaction) (Transaction, error)
 }
 type gateway struct {
 	db MysqlDao
+}
+
+func (g gateway) CreateDefaultWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
+	return g.db.CreateDefaultWalletsForUser(ctx, userID)
 }
 
 func (g gateway) GetWalletsFroUser(ctx context.Context, userID int64) ([]Wallet, error) {

@@ -34,6 +34,21 @@ func (m *MockMysqlDao) EXPECT() *MockMysqlDaoMockRecorder {
 	return m.recorder
 }
 
+// CreateDefaultWalletsForUser mocks base method.
+func (m *MockMysqlDao) CreateDefaultWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDefaultWalletsForUser", ctx, userID)
+	ret0, _ := ret[0].([]Wallet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateDefaultWalletsForUser indicates an expected call of CreateDefaultWalletsForUser.
+func (mr *MockMysqlDaoMockRecorder) CreateDefaultWalletsForUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDefaultWalletsForUser", reflect.TypeOf((*MockMysqlDao)(nil).CreateDefaultWalletsForUser), ctx, userID)
+}
+
 // GetWalletsForUser mocks base method.
 func (m *MockMysqlDao) GetWalletsForUser(ctx context.Context, userID int64) ([]Wallet, error) {
 	m.ctrl.T.Helper()
