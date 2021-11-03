@@ -23,7 +23,19 @@ type gateway struct {
 }
 
 func (g gateway) Create(ctx context.Context, u user) (user, error) {
-	return g.db.InsertUser(ctx, u)
+	user, err := g.db.InsertUser(ctx, u)
+	if err != nil {
+		// todo log
+		return user, err
+	}
+
+	wallets, err := g.wallet.CreateDefaultWalletsForUser(ctx, user.ID)
+	if err != nil {
+		// todo log
+		return user, err
+	}
+	user.Wallets = wallets
+	return user, nil
 }
 
 func (g gateway) Get(ctx context.Context, userID int64) (user, error) {

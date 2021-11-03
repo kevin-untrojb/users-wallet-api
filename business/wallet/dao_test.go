@@ -85,30 +85,28 @@ func TestNewTransactionOK(t *testing.T) {
 	newTransactionID := int64(99)
 
 	mockTransaction := Transaction{
-		WalletID: int64(1),
+		WalletID:        int64(1),
 		TransactionType: "deposit",
-		UserID: int64(1),
-		Amount: "0.00231000",
+		UserID:          int64(1),
+		Amount:          "0.00231000",
 	}
 
-
 	w := Wallet{
-		ID: int64(1),
+		ID:             int64(1),
 		CurrentBalance: "1.00000000",
-		CurrencyName: "BTC",
-		CoinExponent: 8,
+		CurrencyName:   "BTC",
+		CoinExponent:   8,
 	}
 	walletRows := sqlmock.NewRows([]string{"ID", "CURRENT_BALANCE", "NAME", "EXPONENT"})
 	walletRows.AddRow(w.ID, w.CurrentBalance, w.CurrencyName, w.CoinExponent)
 	dbMockClient.AddExpectedQueryWithRows(getWalletAnCurrencyByWalletID, walletRows, mockTransaction.WalletID)
 
-	dbMockClient.AddExpectedExec(updateBalanceOFAWallet, sqlmock.NewResult(1,1),"1.00231000",mockTransaction.WalletID )
+	dbMockClient.AddExpectedExec(updateBalanceOFAWallet, sqlmock.NewResult(1, 1), "1.00231000", mockTransaction.WalletID)
 
-	dbMockClient.AddExpectedExec(insertTransaction, sqlmock.NewResult(newTransactionID,1),
-		mockTransaction.WalletID,mockTransaction.TransactionType,mockTransaction.Amount)
+	dbMockClient.AddExpectedExec(insertTransaction, sqlmock.NewResult(newTransactionID, 1),
+		mockTransaction.WalletID, mockTransaction.TransactionType, mockTransaction.Amount)
 
-
-	res, err := newDao(dbMockClient).NewTransaction(ctx,mockTransaction)
+	res, err := newDao(dbMockClient).NewTransaction(ctx, mockTransaction)
 	assert.Nil(t, err)
 
 	assert.Equal(t, res.ID, newTransactionID)
